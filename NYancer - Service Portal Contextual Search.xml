@@ -1,0 +1,1241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2017-06-20 18:50:17">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>Enhancement to the widget provided by ServiceNow to add contextual search to the service portal.</description>
+<inserted/>
+<name>NYancer - Service Portal Contextual Search</name>
+<origin_sys_id/>
+<release_date/>
+<remote_sys_id>daa397d04fa332002debb7a18110c74f</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>1eedff9c4fe332002debb7a18110c7e3</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_91ed22a54fe232002debb7a18110c73b</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;client_script&gt;&lt;![CDATA[function ($scope, spUtil, $sce, $rootScope) {	
+	// Leave breadcrumbs alone.
+	//$rootScope.$broadcast('sp.update.breadcrumbs', $scope.data.breadcrumbs);
+	// We are most likely in a modal, so we don't need this, either.
+	//spUtil.setSearchPage('kb');
+	$scope.data.text = $sce.trustAsHtml($scope.data.text);	
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;td {
+	padding: .5em;
+  	line-height: 1em;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description&gt;Allows specifying the kb article as an input or option. Supports embedding the widget and is not dependent on the ID being in the URL&lt;/description&gt;&lt;docs/&gt;&lt;field_list&gt;color&lt;/field_list&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ny-kb-art&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link/&gt;&lt;name&gt;NY -  KB Article View&lt;/name&gt;&lt;option_schema&gt;[{"displayValue":"Knowledge","name":"article_id","label":"Article ID","type":"reference","value":"kb_knowledge","ed":{"reference":"kb_knowledge"}}]&lt;/option_schema&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[var t = data;
+data.kb_knowledge_page = $sp.getDisplayValue("kb_knowledge_page") || "kb_view";
+var artId = options.article_id || input.article_id || $sp.getParameter('sys_id');
+var articleGR = GlideRecord("kb_knowledge");
+articleGR.get(artId);
+var recordIsValid = articleGR.isValidRecord();
+var canReadArticle = articleGR.canRead();
+t.isvalid = recordIsValid &amp;&amp; canReadArticle;
+
+if (canReadArticle) {
+  articleGR.incrementViewCount(); // update sys_view_count immediately on kb_knowledge record
+  var art = new GlideRecord("kb_use");
+  if (art.isValid()) {
+    art.article = articleGR.getUniqueValue();
+    art.user = gs.getUserID();
+    art.viewed = true;
+    art.insert(); // kb_use records are aggregated to update sys_view_count nightly
+    $sp.logStat('KB Article View', "kb_knowledge", articleGR.getUniqueValue(), articleGR.short_description);
+  }
+
+  t.category = articleGR.getValue('kb_category');
+  t.sys_id = $sp.getParameter('sys_id');
+  t.showAttachments = false;
+  if (articleGR.display_attachments)
+    t.showAttachments = true;
+  t.categoryDisplay = articleGR.getDisplayValue('kb_category');
+  t.short_description = articleGR.getValue('short_description');
+  t.text = articleGR.getValue('text');
+  t.sys_view_count = articleGR.getDisplayValue('sys_view_count');
+  t.author = articleGR.getDisplayValue('author');
+  t.publishedUtc = articleGR.getValue('published');
+  t.number = articleGR.getValue('number');
+  t.rating = articleGR.getValue('rating');
+	t.direct = false;
+	if (articleGR.direct)
+		t.direct = true;
+
+  t.breadcrumbs = [{label: t.short_description, url: '#'}];
+  if (!articleGR.kb_category.nil()) { 
+    var rec = articleGR.kb_category.getRefRecord();
+    while (rec.getRecordClassName() == "kb_category") {
+      t.breadcrumbs.unshift({label: rec.getDisplayValue(), url: '?id=kb_category&amp;kb_category=' + rec.getUniqueValue()});
+      rec = rec.parent_id.getRefRecord();
+    }
+  }
+  t.breadcrumbs.unshift({label: gs.getMessage("Knowledge Base"), url: '?id=' + t.kb_knowledge_page});
+}
+]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2017-05-05 17:10:18&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;91ed22a54fe232002debb7a18110c73b&lt;/sys_id&gt;&lt;sys_mod_count&gt;7&lt;/sys_mod_count&gt;&lt;sys_name&gt;NY -  KB Article View&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_91ed22a54fe232002debb7a18110c73b&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2017-06-20 15:47:13&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div ng-if="data.isvalid" class="panel panel-{{options.color}} b"&gt;
+
+  &lt;div class="panel-heading"&gt;
+    &lt;h4 class="panel-title"&gt;{{::data.short_description}}&lt;span class="pull-right"&gt;{{::data.number}}&lt;/span&gt;&lt;/h4&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel-body m-b-lg wrapper-lg"&gt;
+
+    &lt;div class="row m-b-lg b-b"&gt;
+        &lt;span class="author pad-right" ng-if="data.author"&gt;
+          &lt;glyph sn-char="user" class="pad-right" /&gt;
+          ${Authored by {{::data.author}}}
+        &lt;/span&gt;
+        &lt;span ng-if="data.sys_view_count == 1" class="views pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="eye-open" class="pad-right" /&gt;
+          ${{{::data.sys_view_count}} View}
+        &lt;/span&gt;
+        &lt;span ng-if="data.sys_view_count &gt; 1" class="views pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="eye-open" class="pad-right" /&gt;
+          ${{{::data.sys_view_count}} Views}
+        &lt;/span&gt;
+        &lt;span class="published pad-right"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;glyph sn-char="calendar" class="pad-right" /&gt;
+          &lt;sn-day-ago date="data.publishedUtc"/&gt;
+        &lt;/span&gt;
+        &lt;span ng-if="data.rating &gt; 0 &amp;&amp; !data.direct" title="{{::data.rating}} rating"&gt;
+          &lt;span class="pad-right"&gt;&amp;#8226;&lt;/span&gt; &lt;uib-rating ng-model="::data.rating" max="5" readonly="true"/&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div ng-if="!data.direct" class="kb_article" ng-bind-html="::data.text" style="overflow-x:auto;"&gt;&lt;/div&gt;
+
+    &lt;h4 ng-if="data.direct"&gt;
+      ${View or download the attachments below}
+    &lt;/h4&gt;
+    &lt;div ng-if="::data.showAttachments || data.direct" class="b-t m-t"&gt;
+      &lt;sp-attachment-manager table="'kb_knowledge'" sys-id="data.sys_id" omit-edit="true"&gt;&lt;/sp-attachment-manager&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div ng-if="!data.isvalid"&gt;
+  ${Article not found}
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>1aedff9c4fe332002debb7a18110c7e5</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>NY -  KB Article View</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>item_option_new_2550ca254f2232002debb7a18110c779</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="item_option_new"><item_option_new action="INSERT_OR_UPDATE"><active>true</active><attributes/><cat_item display_value="Report an Issue">9fab39e2d7532100a9ad1e173e24d484</cat_item><category/><choice_direction>down</choice_direction><choice_field/><choice_table/><create_roles/><default_html_value/><default_value/><delete_roles/><delivery_plan/><description/><display_title>false</display_title><do_not_select_first>false</do_not_select_first><dynamic_default_value/><dynamic_ref_qual/><field/><global>false</global><help_tag>More information</help_tag><help_text/><include_none>false</include_none><instructions/><layout>normal</layout><list_table/><lookup_label/><lookup_price/><lookup_table/><lookup_unique>false</lookup_unique><lookup_value/><macro display_value="cxs_rp_search">81fe0500d73021004792a1737e6103fc</macro><mandatory>false</mandatory><map_to_field>false</map_to_field><mask_use_confirmation>false</mask_use_confirmation><mask_use_encryption>false</mask_use_encryption><name>contextual_search_results</name><order>300</order><price_if_checked>0</price_if_checked><pricing_implications>false</pricing_implications><question_text>Contextual Search Results</question_text><read_roles/><rec_lookup_price/><rec_price_if_checked>0</rec_price_if_checked><record/><record_producer_table>incident</record_producer_table><reference/><reference_qual/><reference_qual_condition/><scale_max>5</scale_max><scale_min>0</scale_min><show_help>false</show_help><show_help_on_load>false</show_help_on_load><sp_widget display_value="PCM Contextual Search">e0affda14f2232002debb7a18110c7f2</sp_widget><summary_macro/><sys_class_name>item_option_new</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2017-05-05 13:51:16</sys_created_on><sys_customer_update>true</sys_customer_update><sys_id>2550ca254f2232002debb7a18110c779</sys_id><sys_mod_count>2</sys_mod_count><sys_name>Contextual Search Results</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>item_option_new_2550ca254f2232002debb7a18110c779</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2017-05-05 14:01:46</sys_updated_on><table/><tooltip/><type>14</type><ui_page/><use_dynamic_default>false</use_dynamic_default><use_reference_qualifier>simple</use_reference_qualifier><variable_name/><variable_set/><variable_width/><visibility>1</visibility><visible_bundle>true</visible_bundle><visible_guide>true</visible_guide><visible_standalone>true</visible_standalone><visible_summary>true</visible_summary><write_roles/></item_option_new><sys_translated_text action="delete_multiple" query="documentkey=2550ca254f2232002debb7a18110c779"/></record_update>]]></payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>1eedff9c4fe332002debb7a18110c7e4</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>Contextual Search Results</target_name>
+<type>Variable</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>cxs_rp_config_8940c2654f2232002debb7a18110c720</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="cxs_rp_config"><cxs_rp_config action="INSERT_OR_UPDATE"><active>true</active><cxs_context_config display_value="Incident Deflection">091fa3d3c37221003d2ae219cdba8f0e</cxs_context_config><limit>20</limit><name>Report an Issue</name><result_action_label>This helped</result_action_label><result_action_value>This helped</result_action_value><results_header_text>Items that may help you resolve your issue</results_header_text><results_per_page>10</results_per_page><sc_cat_item display_value="Report an Issue">9fab39e2d7532100a9ad1e173e24d484</sc_cat_item><search_variable display_value="Description">cb479e83ff223100ba13ffffffffffdb</search_variable><sys_class_name>cxs_rp_config</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2017-05-05 13:51:15</sys_created_on><sys_customer_update>true</sys_customer_update><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>8940c2654f2232002debb7a18110c720</sys_id><sys_mod_count>1</sys_mod_count><sys_name>Report an Issue</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>cxs_rp_config_8940c2654f2232002debb7a18110c720</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2017-05-05 19:37:54</sys_updated_on></cxs_rp_config><sys_translated_text action="delete_multiple" query="documentkey=8940c2654f2232002debb7a18110c720"/></record_update>]]></payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>56edff9c4fe332002debb7a18110c7e4</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>Report an Issue</target_name>
+<type>Record Producer Configuration</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_5ba386694f2232002debb7a18110c765</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;client_script&gt;&lt;![CDATA[function($scope,$filter,spUtil) {
+	/* widget controller */
+	var c = this;
+	
+	$scope.useful_articles = c.data.useful_articles;
+	
+	$scope.currInd = 0;
+
+	$scope.current_article = '';
+
+	for (i = 0; i &lt; c.data.kbArr.length; i++){
+		if (angular.equals(c.data.kbArr[i],c.data.currKb)){
+			$scope.currInd = i;
+			break;
+		}
+	}
+		
+	$scope.kb_widget = '';
+	$scope.disable_back = false;
+	$scope.disable_forward = false;
+	
+	$scope.$watch('currInd',function(newVal,oldVal){
+		$scope.kb_widget = null;
+		$scope.disable_back = newVal == 0;
+		$scope.disable_forward = newVal == (c.data.kbArr.length - 1);
+		$scope.current_article = c.data.kbArr[newVal];
+	});
+	
+	$scope.$watch('current_article',function(newVal,oldVal){
+		spUtil.get('ny-kb-art',{
+			article_id:$scope.current_article.sys_id
+		}).then(function(response){
+			$scope.kb_widget = response;
+		});
+		
+	});
+	
+	//console.log($scope.current_article);
+	
+	$scope.instance = $scope.$parent.instance;
+	
+	//$scope.useful_articles = [];
+	
+	$scope.thisHelped = function(kbArt){
+		$scope.useful_articles.push(kbArt.id);
+		$scope.$emit('cs.helpful_article',{
+			article: kbArt.id
+		});
+		c.server.get({
+			this_helped_fired:true,
+			this_helped_article: kbArt.sys_id
+		});
+	};
+	
+	$scope.closeModal = function(){
+		$scope.$parent.$close();
+	};
+	
+	$scope.next = function(){
+		$scope.currInd++;
+	};
+	
+	$scope.prev = function(){
+		$scope.currInd--;
+	};
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;div.control-block {&amp;#13;
+  display: block;&amp;#13;
+  padding: 5px 10px;&amp;#13;
+  width: 100%;&amp;#13;
+}&amp;#13;
+&amp;#13;
+div.content-block {&amp;#13;
+  display: inline-block;&amp;#13;
+  width: 100%;&amp;#13;
+}&amp;#13;
+&amp;#13;
+div.content-block iframe {&amp;#13;
+  min-height: 500px;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.btn-disabled {&amp;#13;
+  pointer-events: none;&amp;#13;
+  @include opacity(0.7);&amp;#13;
+}&amp;#13;
+&amp;#13;
+a.btn-nav {&amp;#13;
+  padding-left: 3px;&amp;#13;
+  padding-right: 3px;&amp;#13;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description&gt;For use with the contextual search widget. This item is contained in a modal widget and includes navigation, "this helped" button, and will display the knowledge article in an iframe.&lt;/description&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ny-knowledge-popup&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link/&gt;&lt;name&gt;NY - Knowledge Pop-Up&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	
+	// Process "this helped" server side.
+	if (!!input.this_helped_fired){
+		// Create a knowledge feedback record
+		var fb = new GlideRecord('kb_feedback');
+		fb.initialize();
+		fb.article = input.this_helped_article;
+		fb.user = gs.getUserID();
+		fb.useful = 'yes';
+		fb.insert();
+		
+		// Exit the server side script
+		return;
+	}
+	
+	// Copy options and input to data
+	optCopy();
+
+	// We should have a list of results and the index of the result that was clicked
+	
+	function optCopy(){
+		
+		for (var key in options){
+			data[key] = options[key];
+		}
+		
+		for (var oKey in input){
+			data[oKey] = input[oKey];
+		}
+		
+	}
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2017-05-05 15:03:15&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;5ba386694f2232002debb7a18110c765&lt;/sys_id&gt;&lt;sys_mod_count&gt;90&lt;/sys_mod_count&gt;&lt;sys_name&gt;NY - Knowledge Pop-Up&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_5ba386694f2232002debb7a18110c765&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2017-06-20 16:55:02&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div style="padding: 5px;"&gt;
+  &lt;div class="control-block"&gt;
+    &lt;h4 class="pull-left"&gt;Recommended Knowledge&lt;/h4&gt;
+    &lt;span class="pull-right"&gt;
+      &lt;button class="btn btn-default" ng-click="thisHelped(current_article)" ng-class="{'btn-disabled': (useful_articles.indexOf(current_article.id) &gt; -1)}"&gt;
+        &lt;span ng-if="useful_articles.indexOf(current_article.id) &gt; -1" class="glyphicon glyphicon-thumbs-up"&gt;&lt;/span&gt;
+        ${This helped}
+      &lt;/button&gt;
+      &lt;!-- navigation buttons --&gt;
+      &lt;a ng-click="prev()" class="ng-class: ['btn btn-nav',{'btn-disabled': disable_back}];"&gt;&lt;span class="glyphicon glyphicon-arrow-up"&gt;&lt;/span&gt;&lt;/a&gt;
+      &lt;a ng-click="next()" class="ng-class: ['btn btn-nav',{'btn-disabled': disable_forward}];"&gt;&lt;span class="glyphicon glyphicon-arrow-down"&gt;&lt;/span&gt;&lt;/a&gt;
+      &lt;!-- Close button --&gt;
+      &lt;span class="glyphicon glyphicon-remove" ng-click="closeModal()" ng-if="!!$parent.$close"&gt;&lt;/span&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="content-block"&gt;
+    &lt;div ng-if="!!kb_widget"&gt;
+      &lt;sp-widget widget="kb_widget"&gt;&lt;/sp-widget&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>56edff9c4fe332002debb7a18110c7e5</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>NY - Knowledge Pop-Up</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_11a534f113c46200a76e529f3244b0f2</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, $timeout) {
+	var c = this;
+
+	if (!c.data.searchConfig)
+		return;
+
+	$scope.form = {};
+	
+	// Populate the title
+	$scope.form.results_header_text = c.data.searchConfig.results_header_text;
+	
+	// handle Results pagination/windowing
+	$scope.firstPage = function() {
+		if (!$scope.isPreviousValid())
+			return;
+		c.data.searchConfig.currentOffset = 0;
+		c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+		c.server.update();
+	};
+
+	$scope.previousPage = function() {
+		if (!$scope.isPreviousValid())
+			return;
+		c.data.searchConfig.currentOffset -= parseInt(c.data.searchConfig.results_per_page);
+		if (c.data.searchConfig.currentOffset &lt; 0)
+			c.data.searchConfig.currentOffset = 0;
+		c.data.searchConfig.end -= parseInt(c.data.searchConfig.results_per_page);
+		if (c.data.searchConfig.currentOffset &lt; parseInt(c.data.searchConfig.results_per_page))
+			c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+		c.server.update();
+	};
+
+	$scope.nextPage = function() {
+		if (!$scope.isNextValid())
+			return;
+		c.data.searchConfig.currentOffset += parseInt(c.data.searchConfig.results_per_page);
+		if (c.data.searchConfig.currentOffset &gt; parseInt(c.data.searchConfig.end))
+			c.data.searchConfig.currentOffset = parseInt(c.data.searchConfig.end);
+		c.data.searchConfig.end += parseInt(c.data.searchConfig.results_per_page);
+		c.server.update();
+	};
+	
+	$scope.isNextValid = function() {
+		var hasMoreResults = c.data.hasMoreResults;
+		var resultsPerPage = parseInt(c.data.searchConfig.results_per_page);
+		var end = parseInt(c.data.searchConfig.end);
+		var limit = parseInt(c.data.searchConfig.limit);
+		var currentOffSet = parseInt(c.data.searchConfig.currentOffset);
+		return (hasMoreResults &amp;&amp; (end + resultsPerPage &lt;= limit || limit - (currentOffSet + resultsPerPage)  &gt; 0));
+	};
+	
+	$scope.isPreviousValid = function() {
+		return parseInt(c.data.searchConfig.currentOffset) &gt; 0;
+	};
+
+	// Watch the config defined variable
+	var searchFieldId = "IO:" + c.data.searchConfig.search_variable;
+	$scope.field = $scope.page.g_form.getField(searchFieldId);
+
+	// Delay search trigger so that not every keypress triggers search
+	var delay = c.data.delay;
+	if (!delay)
+		delay = 500;
+	
+	var promises = [];
+	$scope.$watch('field.stagedValue', function (v) {
+		for (var i = 0; i &lt; promises.length; i++)
+			$timeout.cancel(promises[i]);
+		promises = [];
+		var promise = $timeout((function(v) {
+			if (!v)
+				return;
+			c.data.query = v;
+
+			// Rest results VCR controls
+			c.data.searchConfig.currentOffset = 0;
+			c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+
+			c.server.update();
+		}).bind(this, v), delay);
+		promises.push(promise);
+	});
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.cxs_result_container { padding: 7px 15px 7px 15px; }
+.cxs_result_content { padding: 0px; }
+.cxs_meta_row .cxs_article_info { display: block; }
+.cxs_article_info li { display: inline; margin-right: 10px; }
+.cxs_rating_readonly { display: inline-block; }
+
+div.cxs_result_title, div.cxs_meta_row { padding-bottom: 8px; }
+div.vcr_controls { display: inline-block; height: 18px; width: 58px; }
+span.cxs_results_vcr { text-align: center; }
+
+ul.cxs_article_info { padding: 0px; margin: 0px; }
+
+i:before { vertical-align: baseline; }
+img.cxs_result_image { width: 100%; }
+
+.inactive-star { color: #BDC0C4; display: inline-block; }
+.active-star { color: #ffca1f; display: inline-block; }
+
+.panel-heading { display: none; }
+
+.side-box { margin: 0 0; border: #bdc0c4 1px solid; }
+.side-box .box { padding: 5px; display: inline-block; width: 49%; }
+.side-box .box:nth-child(2) { border-left: #bdc0c4 1px solid; }
+.side-box .box .number-box { direction: ltr; padding-top: 2px; padding-bottom: 2px; font-size: 20px; text-align: center; color: #000000; }
+.side-box .box .text-box { font-size: 11px; color: #bdc0c4; text-align: center; }
+
+.btn-icon {
+  border: none;
+  border-top-color: initial;
+  border-top-style: none;
+  border-top-width: initial;
+  border-right-color: initial;
+  border-right-style: none;
+  border-right-width: initial;
+  border-bottom-color: initial;
+  border-bottom-style: none;
+  border-bottom-width: initial;
+  border-left-color: initial;
+  border-left-style: none;
+  border-left-width: initial;
+  border-image-source: initial;
+  border-image-slice: initial;
+  border-image-width: initial;
+  border-image-outset: initial;
+  border-image-repeat: initial;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description&gt;This provides contextual search functionality for Service Portal&lt;/description&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;prb692368-workaround&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function(scope) {
+	
+}]]&gt;&lt;/link&gt;&lt;name&gt;PRB692368 Workaround&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+
+	// Initial load needs configuration: cxs_rp_config record
+	if (JSUtil.nil(input.searchConfig) || JSUtil.nil(input.searchConfig.currentOffset)) {
+		data.searchConfig = getCSConfig($sp.getParameter("sys_id"));
+		if (JSUtil.nil(data.searchConfig))
+			return;
+		data.searchConfig.currentOffset = 0;
+		data.searchConfig.end = parseInt(data.searchConfig.results_per_page);
+	}
+	else {
+		if (JSUtil.nil(input.searchConfig))
+			return;
+		data.searchConfig = input.searchConfig;
+	}
+
+	// Verify there is input from the user
+	if (JSUtil.nil(input) || JSUtil.nil(input.query))
+		return;
+
+	// Setup Search Request
+	data.valid = false;
+	data.results = [];
+	if (!data.delay)
+		data.delay = parseInt(gs.getProperty("com.snc.contextual_search.wait_time", 500), 10);
+	data.freetext = input.query;
+	if (!JSUtil.nil(data.freetext))
+		getCSResults();
+
+	function getCSResults() {
+		var searchRequest = new SNC.SearchRequest().fromJSON(JSON.stringify({
+			"context" : data.searchConfig.cxs_context_config,
+			"debug" : false,
+			"entity" : "articles",
+			"meta" : {
+				"applyFilter" : true,
+				"includePinnedArticles" : false,
+				"searchWhenEmpty" : false,
+				"limit": parseInt(data.searchConfig.limit, 10),
+				"window" : {
+					"start" : data.searchConfig.currentOffset,
+					"end" : data.searchConfig.end
+				}
+			},
+			"query" : {
+				"freetext" : data.freetext,
+				"order" : "relevancy",
+				"searchParameters" : {
+					"knowledgeBase" : "",
+					"language" : "en",
+					showAnswered : true
+				}
+			}
+		}));
+
+		var searchResponse = searchRequest.submit();
+		if (searchResponse) {
+			var results = searchResponse.results;
+			data.hasMoreResults = searchResponse.meta.has_more_results;
+			for (var i = 0; i &lt; results.length; i++)
+				data.results.push(JSON.parse(results[i].toJSON()));
+		}
+		data.valid = true;
+	}
+	
+	function getCSConfig(sysId) {
+		if (JSUtil.nil(sysId))
+			return null;
+		
+		var gr = new GlideRecord("cxs_rp_config");
+		gr.addQuery("sc_cat_item", sysId);
+		gr.addActiveQuery();
+		gr.query();
+		if (!gr.next())
+			return null;
+		return cxs_App.getBusiness(gr).getRPConfigObject();
+	}
+
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;erik.fridell&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2016-06-17 00:15:17&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;11a534f113c46200a76e529f3244b0f2&lt;/sys_id&gt;&lt;sys_mod_count&gt;1&lt;/sys_mod_count&gt;&lt;sys_name&gt;PRB692368 Workaround&lt;/sys_name&gt;&lt;sys_package display_value=""&gt;59ac0f1013243200ed373d62f244b015&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_11a534f113c46200a76e529f3244b0f2&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2017-01-23 16:37:28&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;sp-panel ng-if="c.data.valid" class="cxs_results_panel"&gt;
+  &lt;!-- VCR controls for results --&gt;
+  &lt;div ng-if="c.data.results.length &gt; 0" class="cxs_results_vcr row"&gt;
+    &lt;div class="col-md-9"&gt;
+       {{form.results_header_text}}
+    &lt;/div&gt;
+    &lt;span class="cxs_results_vcr col-md-3 pull-right"&gt;
+      &lt;button name="vcr_first" data-nav="true" id="cxs_results_first" title="${First page}" class="btn btn-default btn-icon" ng-disabled="!isPreviousValid()" ng-click="firstPage()"&gt;
+        &lt;span class="glyphicon glyphicon-backward"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+      &lt;button name="vcr_back" data-nav="true" id="cxs_results_back" title="${Previous page}" class="btn btn-default btn-icon" ng-disabled="!isPreviousValid()" ng-click="previousPage()"&gt;
+        &lt;span class="glyphicon glyphicon-triangle-left"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+      &lt;div class="vcr_controls"&gt;
+        &lt;span class="list_row_number_input"&gt;
+          &lt;span id="cxs_results_first_row"&gt;{{data.searchConfig.currentOffset + 1}}&lt;/span&gt;
+          ${to}
+          &lt;span id="cxs_results_last_row"&gt;{{data.searchConfig.end}}&lt;/span&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button name="vcr_next" data-nav="true" id="cxs_results_next" title="${Next page}" class="btn btn-default btn-icon" ng-disabled="!isNextValid()" ng-click="nextPage()"&gt;
+        &lt;span aria-hidden="true" class="glyphicon glyphicon-triangle-right"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+  &lt;!-- Handle Search Results --&gt;
+  &lt;div ng-repeat="result in c.data.results" class="m-b row"&gt;
+    &lt;!-- Knowledge Articles --&gt;
+    &lt;div ng-if="result.meta.source == 'knowledge'" class="cxs_result_container"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_title"&gt;
+          &lt;a href="{{result.meta.link}}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_meta_row"&gt;
+          &lt;span class="breadcrumbs"&gt;
+            &lt;span&gt;${Knowledge Base}: {{result.meta.knowledgeBase}}&lt;/span&gt;
+            &lt;span role="separator"&gt;|&lt;/span&gt; &lt;span&gt;Category: {{result.meta.parentCategories.splice().reverse().join(' &gt; ')}}&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_meta_row"&gt;
+          &lt;ul class="cxs_article_info"&gt;
+            &lt;li&gt;&lt;i class="glyphicon glyphicon-user"&gt;&lt;/i&gt; ${Author}: {{result.meta.author}}&lt;/li&gt;
+            &lt;li&gt;&lt;i class="glyphicon glyphicon-calendar"&gt;&lt;/i&gt; ${Published}: {{result.meta.published}}&lt;/li&gt;
+            &lt;li&gt;&lt;i class="fa fa-circle"&gt;&lt;/i&gt; 
+              &lt;span class="rating_container"&gt;${Rating}:
+                &lt;div data-ng-repeat="i in [1,2,3,4,5]" class="cxs_rating_readonly" aria-hidden="true"&gt;
+                  &lt;span ng-if="result.meta.rating &gt;= i" class='active-star'&gt;&amp;#9733;&lt;/span&gt;
+                  &lt;span ng-if="!(result.meta.rating &gt;= i)" class='inactive-star'&gt;&amp;#9733;&lt;/span&gt;
+                &lt;/div&gt;
+              &lt;/span&gt;
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_snippet"&gt;
+          &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Service Catalog Items --&gt;
+    &lt;div ng-if="result.meta.source == 'catalog'" class="cxs_result_container"&gt;  
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_title"&gt;
+          &lt;a href="{{result.meta.link}}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_snippet"&gt;
+          &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div ng-if="!result.meta.preview" ng-init="result.meta.preview=false" class="cxs_result_preview"&gt;
+          &lt;span ng-click="result.meta.preview=true"&gt;
+            &lt;i class="fa fa-chevron-right"&gt;&lt;/i&gt; ${upper_preview}
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div ng-if="result.meta.preview" class="cxs_result_preview"&gt;
+          &lt;span ng-click="result.meta.preview=false"&gt;
+            &lt;i class="fa fa-chevron-down" &gt;&lt;/i&gt; ${upper_preview}
+            &lt;div class="cxs_result_content"&gt;
+              &lt;div class="cxs_result_image col-md-3"&gt;
+                &lt;img title="{{result.title}}" src="{{result.image.link}}" class="cxs_result_image" /&gt;
+              &lt;/div&gt;
+              &lt;div class="cxs_result_description col-md-9"&gt;
+                &lt;span ng-bind-html="result.meta.description"&gt;&lt;/span&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Social Q and A --&gt;
+    &lt;div ng-if="result.meta.source == 'social'" class="cxs_result_container"&gt;  
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_content col-md-10"&gt;
+          &lt;div class="cxs_result_title"&gt;
+            &lt;a href="{{result.meta.link}}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+          &lt;/div&gt;
+          &lt;div class="cxs_meta_row"&gt;
+            &lt;ul class="cxs_article_info"&gt;
+              &lt;li&gt;${Asked by}: {{result.meta.author}}&lt;/li&gt;
+              &lt;li&gt;&lt;i class="fa fa-circle" aria-hidden="true"&gt;&lt;/i&gt; {{result.meta.viewCount}} ${Views}&lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/div&gt;
+          &lt;div class="cxs_result_snippet"&gt;
+            &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_image col-md-2"&gt;
+          &lt;div class="question_stats_box"&gt;
+            &lt;div class="side-box"&gt;
+              &lt;div class="box" style="width: 47%;"&gt;
+                &lt;div class="number-box"&gt;{{result.meta.votes}}&lt;/div&gt;
+                &lt;div class="text-box"&gt;${vote}&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class="box" style="width: 47%;"&gt;
+                &lt;div class="number-box"&gt;{{result.meta.answerCount}}&lt;/div&gt;
+                &lt;div class="text-box"&gt;${Answer}&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div ng-if="(c.data.results.length == 0)"&gt;${No matching results found for '{{data.freetext}}'}&lt;/div&gt;
+&lt;/sp-panel&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>92edff9c4fe332002debb7a18110c7e5</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>PRB692368 Workaround</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_e0affda14f2232002debb7a18110c7f2</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, $timeout,filterFilter,spUtil,$rootScope) {
+	var c = this;
+	
+	if (!c.data.searchConfig){
+		// we could not find the contextual search config for some reason. Probably could not get the cat item's sys_id. Let's try to get it from an ancestor's scope
+		scopeWalker($scope);
+	} else {
+		runWidget();
+	}
+	
+	function runWidget(){
+		
+		$scope.item_submitted = false;
+		
+		// Placeholder for modal pop-up for knowledge articles.
+		c.kb_modal = '';
+		
+		$scope.ref = {};
+		
+		$scope.useful_articles = [];
+		
+		$scope.form = {};
+		
+		// Populate the title
+		$scope.form.results_header_text = c.data.searchConfig.results_header_text;
+		
+		// handle Results pagination/windowing
+		$scope.firstPage = function() {
+			if (!$scope.isPreviousValid())
+				return;
+			c.data.searchConfig.currentOffset = 0;
+			c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+			c.server.update();
+		};
+		
+		$scope.previousPage = function() {
+			if (!$scope.isPreviousValid())
+				return;
+			c.data.searchConfig.currentOffset -= parseInt(c.data.searchConfig.results_per_page);
+			if (c.data.searchConfig.currentOffset &lt; 0)
+				c.data.searchConfig.currentOffset = 0;
+			c.data.searchConfig.end -= parseInt(c.data.searchConfig.results_per_page);
+			if (c.data.searchConfig.currentOffset &lt; parseInt(c.data.searchConfig.results_per_page))
+				c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+			c.server.update();
+		};
+		
+		$scope.nextPage = function() {
+			if (!$scope.isNextValid())
+				return;
+			c.data.searchConfig.currentOffset += parseInt(c.data.searchConfig.results_per_page);
+			if (c.data.searchConfig.currentOffset &gt; parseInt(c.data.searchConfig.end))
+				c.data.searchConfig.currentOffset = parseInt(c.data.searchConfig.end);
+			c.data.searchConfig.end += parseInt(c.data.searchConfig.results_per_page);
+			c.server.update();
+		};
+		
+		$scope.isNextValid = function() {
+			var hasMoreResults = c.data.hasMoreResults;
+			var resultsPerPage = parseInt(c.data.searchConfig.results_per_page);
+			var end = parseInt(c.data.searchConfig.end);
+			var limit = parseInt(c.data.searchConfig.limit);
+			var currentOffSet = parseInt(c.data.searchConfig.currentOffset);
+			return (hasMoreResults &amp;&amp; (end + resultsPerPage &lt;= limit || limit - (currentOffSet + resultsPerPage)  &gt; 0));
+		};
+		
+		$scope.isPreviousValid = function() {
+			return parseInt(c.data.searchConfig.currentOffset) &gt; 0;
+		};
+		
+		// Watch the config defined variable
+		var searchFieldId = "IO:" + c.data.searchConfig.search_variable;
+		$scope.field = $scope.page.g_form.getField(searchFieldId);
+		
+		// Delay search trigger so that not every keypress triggers search
+		var delay = c.data.delay;
+		if (!delay)
+			delay = 500;
+		
+		var promises = [];
+		$scope.$watch('field.stagedValue', function (v,o) {
+			for (var i = 0; i &lt; promises.length; i++)
+				$timeout.cancel(promises[i]);
+			promises = [];
+			var promise = $timeout((function(v) {
+				if (!v &amp;&amp; !!o){
+					// Field has been cleared. Clear the items
+					c.data.results = [];
+					c.data.freetext = null;
+					return;
+				} else if (!v)
+					return;
+				
+				c.data.query = v;
+				
+				// Rest results VCR controls
+				c.data.searchConfig.currentOffset = 0;
+				c.data.searchConfig.end = parseInt(c.data.searchConfig.results_per_page);
+				
+				c.server.update();
+			}).bind(this, v), delay);
+			promises.push(promise);
+		});
+		
+		$scope.$watch('data.results',function(newValue,oldValue){
+			if (!!c.data.results){
+				var kbItems = filterFilter(c.data.results,{
+					meta:{
+						source:"knowledge"
+					}
+				});
+				kbItems = c.data.results;
+				//console.log(kbItems);
+			}
+		});
+		
+		$scope.showKBModal = function(clicked){
+			// Render the modal widget
+			embeddedOpts = {};
+			embeddedOpts.kbArr = filterFilter(c.data.results,{meta:{
+				source:"knowledge"
+			}
+		});
+		embeddedOpts.currKb = clicked;
+		embeddedOpts.useful_articles = $scope.useful_articles;
+		
+		var modalOpts = {
+			embeddedWidgetId:'ny-knowledge-popup',
+			embeddedWidgetOptions: embeddedOpts
+		};
+		
+		spUtil.get('widget-modal',modalOpts).then(function(response){
+			c.kb_modal = response;
+		});
+	};
+	
+	$scope.$on('sp.widget-modal.closed',function(evt,args){
+		c.kb_modal = '';
+	});
+	
+	$rootScope.$on("$sp.sc_cat_item.submitted",function(evt,args){
+		
+		//console.log('item submitted');
+		//console.log(args);
+		//console.log($scope.useful_articles);
+		$scope.item_submitted = true;
+		c.server.get({
+			helpful_articles: $scope.useful_articles,
+			new_record: args
+		});
+		
+	});
+	
+	$scope.$on('cs.helpful_article',function(evt,args){
+		var newArr = [args.article];
+		$scope.useful_articles = $scope.useful_articles.concat(newArr);
+		//console.log($scope.useful_articles);
+	});
+		
+}
+
+function scopeWalker(scope){
+	if (!!scope.data &amp;&amp; !!scope.data.sc_cat_item){
+		// We found an ancestor where the cat item is defined. We'll pass the ID into the server script, then get all the stuff we need and update the controller with the result.
+		c.server.get({
+			item_id: scope.data.sc_cat_item.sys_id
+		}).then(function(response){
+			// Replace the controller data object with the result from the server response.
+			c.data = response.data;
+			// Now, run the widget!
+			runWidget();
+		});
+	} else if (!!scope.$parent){
+		scopeWalker(scope.$parent);
+	}
+}
+
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.cxs_result_container { padding: 7px 15px 7px 15px; }&amp;#13;
+.cxs_result_content { padding: 0px; }&amp;#13;
+.cxs_meta_row .cxs_article_info { display: block; }&amp;#13;
+.cxs_article_info li { display: inline; margin-right: 10px; }&amp;#13;
+.cxs_rating_readonly { display: inline-block; }&amp;#13;
+&amp;#13;
+div.cxs_result_title, div.cxs_meta_row { padding-bottom: 8px; }&amp;#13;
+div.vcr_controls { display: inline-block; height: 18px; width: 58px; }&amp;#13;
+span.cxs_results_vcr { text-align: center; }&amp;#13;
+&amp;#13;
+ul.cxs_article_info { padding: 0px; margin: 0px; }&amp;#13;
+&amp;#13;
+i:before { vertical-align: baseline; }&amp;#13;
+img.cxs_result_image { width: 100%; }&amp;#13;
+&amp;#13;
+.inactive-star { color: #BDC0C4; display: inline-block; }&amp;#13;
+.active-star { color: #ffca1f; display: inline-block; }&amp;#13;
+&amp;#13;
+.panel-heading { display: none; }&amp;#13;
+&amp;#13;
+.side-box { margin: 0 0; border: #bdc0c4 1px solid; }&amp;#13;
+.side-box .box { padding: 5px; display: inline-block; width: 49%; }&amp;#13;
+.side-box .box:nth-child(2) { border-left: #bdc0c4 1px solid; }&amp;#13;
+.side-box .box .number-box { direction: ltr; padding-top: 2px; padding-bottom: 2px; font-size: 20px; text-align: center; color: #000000; }&amp;#13;
+.side-box .box .text-box { font-size: 11px; color: #bdc0c4; text-align: center; }&amp;#13;
+&amp;#13;
+.btn-icon {&amp;#13;
+  border: none;&amp;#13;
+  border-top-color: initial;&amp;#13;
+  border-top-style: none;&amp;#13;
+  border-top-width: initial;&amp;#13;
+  border-right-color: initial;&amp;#13;
+  border-right-style: none;&amp;#13;
+  border-right-width: initial;&amp;#13;
+  border-bottom-color: initial;&amp;#13;
+  border-bottom-style: none;&amp;#13;
+  border-bottom-width: initial;&amp;#13;
+  border-left-color: initial;&amp;#13;
+  border-left-style: none;&amp;#13;
+  border-left-width: initial;&amp;#13;
+  border-image-source: initial;&amp;#13;
+  border-image-slice: initial;&amp;#13;
+  border-image-width: initial;&amp;#13;
+  border-image-outset: initial;&amp;#13;
+  border-image-repeat: initial;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.m-b.row {&amp;#13;
+ &amp;#13;
+  margin: 0px 5px;&amp;#13;
+  &amp;#13;
+}&amp;#13;
+&amp;#13;
+a.kb_result {&amp;#13;
+  cursor: pointer;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.helpful {&amp;#13;
+  font-size: 90%;&amp;#13;
+  cursor: default;&amp;#13;
+}&amp;#13;
+&amp;#13;
+a.inactive {&amp;#13;
+   pointer-events: none;&amp;#13;
+   cursor: default;&amp;#13;
+   text-decoration: none;&amp;#13;
+   color: inherit;&amp;#13;
+}&amp;#13;
+&amp;#13;
+i.glyphicon {&amp;#13;
+  margin-left: 5px;&amp;#13;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description&gt;This provides contextual search functionality for Service Portal&lt;/description&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ny-contextual-search&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function(scope) {
+	
+}]]&gt;&lt;/link&gt;&lt;name&gt;NY -  Contextual Search&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+
+	// This is the server-side script to link helpful articles to new tickets inserted by the record producer
+	if (!!input &amp;&amp; !!input.helpful_articles &amp;&amp; !!input.new_record){
+		
+		input.helpful_articles.forEach(function(itm,ind,arr){
+			// Associate each Helpful article to the new record
+			var artId = itm.split(':')[1];
+			var gr = new GlideRecord('m2m_kb_task');
+			gr.initialize();
+			gr.kb_knowledge = artId;
+			gr.task = input.new_record.sys_id;
+			gr.insert();
+		});
+		
+		return;
+		
+	}
+	
+	var itemId = $sp.getParameter("sys_id");
+	
+	// This is to handle a call from the client script that found the cat item sys_id from an ancestor scope.
+	// This happens if the sys_id of the item cannot be determined from the page URL.
+	if (!!input &amp;&amp; !!input.item_id){
+		itemId = input.item_id;
+	}
+
+	// Initial load needs configuration: cxs_rp_config record
+	if (JSUtil.nil(input.searchConfig) || JSUtil.nil(input.searchConfig.currentOffset)) {
+		data.searchConfig = getCSConfig(itemId);
+		if (JSUtil.nil(data.searchConfig))
+			return;
+		data.searchConfig.currentOffset = 0;
+		data.searchConfig.end = parseInt(data.searchConfig.results_per_page);
+	}
+	else {
+		if (JSUtil.nil(input.searchConfig))
+			return;
+		data.searchConfig = input.searchConfig;
+	}
+
+	// Verify there is input from the user
+	if (JSUtil.nil(input) || JSUtil.nil(input.query))
+		return;
+
+	// Setup Search Request
+	data.valid = false;
+	data.results = [];
+	if (!data.delay)
+		data.delay = parseInt(gs.getProperty("com.snc.contextual_search.wait_time", 500), 10);
+	data.freetext = input.query;
+	if (!JSUtil.nil(data.freetext))
+		getCSResults();
+
+	function getCSResults() {
+		var searchRequest = new SNC.SearchRequest().fromJSON(JSON.stringify({
+			"context" : data.searchConfig.cxs_context_config,
+			"debug" : false,
+			"entity" : "articles",
+			"meta" : {
+				"applyFilter" : true,
+				"includePinnedArticles" : false,
+				"searchWhenEmpty" : false,
+				"limit": parseInt(data.searchConfig.limit, 10),
+				"window" : {
+					"start" : data.searchConfig.currentOffset,
+					"end" : data.searchConfig.end
+				}
+			},
+			"query" : {
+				"freetext" : data.freetext,
+				"order" : "relevancy",
+				"searchParameters" : {
+					"knowledgeBase" : "",
+					"language" : "en",
+					showAnswered : true
+				}
+			}
+		}));
+
+		var searchResponse = searchRequest.submit();
+		if (searchResponse) {
+			var results = searchResponse.results;
+			data.hasMoreResults = searchResponse.meta.has_more_results;
+			for (var i = 0; i &lt; results.length; i++){
+				
+				var res = JSON.parse(results[i].toJSON());
+				
+				// Split out the sys_id from the id
+				res['sys_id'] = res.id.split(':')[1];
+			
+				data.results.push(res);
+			}
+		}
+		data.valid = true;
+	}
+	
+	function getCSConfig(sysId) {
+		if (JSUtil.nil(sysId))
+			return null;
+		
+		var gr = new GlideRecord("cxs_rp_config");
+		gr.addQuery("sc_cat_item", sysId);
+		gr.addActiveQuery();
+		gr.query();
+		if (!gr.next())
+			return null;
+		return cxs_App.getBusiness(gr).getRPConfigObject();
+	}
+
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2017-05-05 13:48:11&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;e0affda14f2232002debb7a18110c7f2&lt;/sys_id&gt;&lt;sys_mod_count&gt;37&lt;/sys_mod_count&gt;&lt;sys_name&gt;NY -  Contextual Search&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_e0affda14f2232002debb7a18110c7f2&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2017-06-20 18:43:21&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;sp-widget ng-if="!!c.kb_modal" widget="c.kb_modal"&gt;&lt;/sp-widget&gt;
+
+&lt;sp-panel ng-if="c.data.valid &amp;&amp; !!c.data.freetext" class="cxs_results_panel"&gt;
+  &lt;!-- VCR controls for results --&gt;
+  &lt;div ng-if="c.data.results.length &gt; 0" class="cxs_results_vcr row"&gt;
+    &lt;div class="col-md-9"&gt;
+      &lt;h4&gt;{{form.results_header_text}}&lt;/h4&gt;
+    &lt;/div&gt;
+    &lt;span class="cxs_results_vcr col-md-3 pull-right"&gt;
+      &lt;button name="vcr_first" data-nav="true" id="cxs_results_first" title="${First page}" class="btn btn-default btn-icon" ng-disabled="!isPreviousValid()" ng-click="firstPage()"&gt;
+        &lt;span class="glyphicon glyphicon-backward"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+      &lt;button name="vcr_back" data-nav="true" id="cxs_results_back" title="${Previous page}" class="btn btn-default btn-icon" ng-disabled="!isPreviousValid()" ng-click="previousPage()"&gt;
+        &lt;span class="glyphicon glyphicon-triangle-left"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+      &lt;div class="vcr_controls"&gt;
+        &lt;span class="list_row_number_input"&gt;
+          &lt;span id="cxs_results_first_row"&gt;{{data.searchConfig.currentOffset + 1}}&lt;/span&gt;
+          ${to}
+          &lt;span id="cxs_results_last_row"&gt;{{data.searchConfig.end}}&lt;/span&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button name="vcr_next" data-nav="true" id="cxs_results_next" title="${Next page}" class="btn btn-default btn-icon" ng-disabled="!isNextValid()" ng-click="nextPage()"&gt;
+        &lt;span aria-hidden="true" class="glyphicon glyphicon-triangle-right"&gt;&lt;/span&gt;
+      &lt;/button&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+  &lt;!-- Handle Search Results --&gt;
+  &lt;div ng-repeat="result in c.data.results" class="m-b row"&gt;
+    &lt;!-- Knowledge Articles --&gt;
+    &lt;div ng-if="result.meta.source == 'knowledge'" class="cxs_result_container"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_title"&gt;
+          &lt;!--a href="{{result.meta.link}}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a--&gt;
+          &lt;span ng-if="useful_articles.indexOf(result.id) &gt; -1" class="label label-primary helpful"&gt;${Helpful} &lt;i class="glyphicon glyphicon-thumbs-up"&gt;&lt;/i&gt;&lt;/span&gt;
+          &lt;a href="" ng-click="showKBModal(result)" class="kb_result" ng-class="{'inactive': item_submitted}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_meta_row"&gt;
+          &lt;span class="breadcrumbs"&gt;
+            &lt;span&gt;${Knowledge Base}: {{result.meta.knowledgeBase}}&lt;/span&gt;
+            &lt;span role="separator"&gt;|&lt;/span&gt; &lt;span&gt;Category: {{result.meta.parentCategories.splice().reverse().join(' &gt; ')}}&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_meta_row"&gt;
+          &lt;ul class="cxs_article_info"&gt;
+            &lt;li&gt;&lt;i class="glyphicon glyphicon-user"&gt;&lt;/i&gt; ${Author}: {{result.meta.author}}&lt;/li&gt;
+            &lt;li&gt;&lt;i class="glyphicon glyphicon-calendar"&gt;&lt;/i&gt; ${Published}: {{result.meta.published}}&lt;/li&gt;
+            &lt;li&gt;&lt;i class="fa fa-circle"&gt;&lt;/i&gt; 
+              &lt;span class="rating_container"&gt;${Rating}:
+                &lt;div data-ng-repeat="i in [1,2,3,4,5]" class="cxs_rating_readonly" aria-hidden="true"&gt;
+                  &lt;span ng-if="result.meta.rating &gt;= i" class='active-star'&gt;&amp;#9733;&lt;/span&gt;
+                  &lt;span ng-if="!(result.meta.rating &gt;= i)" class='inactive-star'&gt;&amp;#9733;&lt;/span&gt;
+                &lt;/div&gt;
+              &lt;/span&gt;
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_snippet"&gt;
+          &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Service Catalog Items --&gt;
+    &lt;div ng-if="result.meta.source == 'catalog'" class="cxs_result_container"&gt;  
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_title"&gt;
+          &lt;a href="?id=sc_cat_item&amp;sys_id={{result.sys_id}}" target="_blank"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_snippet"&gt;
+          &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div ng-if="!result.meta.preview" ng-init="result.meta.preview=false" class="cxs_result_preview"&gt;
+          &lt;span ng-click="result.meta.preview=true"&gt;
+            &lt;i class="fa fa-chevron-right"&gt;&lt;/i&gt; ${upper_preview}
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div ng-if="result.meta.preview" class="cxs_result_preview"&gt;
+          &lt;span ng-click="result.meta.preview=false"&gt;
+            &lt;i class="fa fa-chevron-down" &gt;&lt;/i&gt; ${upper_preview}
+            &lt;div class="cxs_result_content"&gt;
+              &lt;div class="cxs_result_image col-md-3"&gt;
+                &lt;img title="{{result.title}}" src="{{result.image.link}}" class="cxs_result_image" /&gt;
+              &lt;/div&gt;
+              &lt;div class="cxs_result_description col-md-9"&gt;
+                &lt;span ng-bind-html="result.meta.description"&gt;&lt;/span&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Social Q and A --&gt;
+    &lt;div ng-if="result.meta.source == 'social'" class="cxs_result_container"&gt;  
+      &lt;div class="row"&gt;
+        &lt;div class="cxs_result_content col-md-10"&gt;
+          &lt;div class="cxs_result_title"&gt;
+            &lt;a href="{{result.meta.link}}"&gt;&lt;span ng-bind-html="result.title"&gt;&lt;/span&gt;&lt;/a&gt;
+          &lt;/div&gt;
+          &lt;div class="cxs_meta_row"&gt;
+            &lt;ul class="cxs_article_info"&gt;
+              &lt;li&gt;${Asked by}: {{result.meta.author}}&lt;/li&gt;
+              &lt;li&gt;&lt;i class="fa fa-circle" aria-hidden="true"&gt;&lt;/i&gt; {{result.meta.viewCount}} ${Views}&lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/div&gt;
+          &lt;div class="cxs_result_snippet"&gt;
+            &lt;span ng-bind-html="result.snippet"&gt;&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="cxs_result_image col-md-2"&gt;
+          &lt;div class="question_stats_box"&gt;
+            &lt;div class="side-box"&gt;
+              &lt;div class="box" style="width: 47%;"&gt;
+                &lt;div class="number-box"&gt;{{result.meta.votes}}&lt;/div&gt;
+                &lt;div class="text-box"&gt;${vote}&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class="box" style="width: 47%;"&gt;
+                &lt;div class="number-box"&gt;{{result.meta.answerCount}}&lt;/div&gt;
+                &lt;div class="text-box"&gt;${Answer}&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div ng-if="(c.data.results.length == 0)"&gt;${No matching results found for '{{data.freetext}}'}&lt;/div&gt;
+&lt;/sp-panel&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>daedff9c4fe332002debb7a18110c7e5</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>NY -  Contextual Search</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>m2m_sp_ng_pro_sp_widget_19ed22a54fe232002debb7a18110c73d</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget"><m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE"><sp_angular_provider display_value="spAttachmentManager">06e836f0d722120023c84f80de6103a1</sp_angular_provider><sp_widget display_value="Copy of KB Article Page">91ed22a54fe232002debb7a18110c73b</sp_widget><sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2017-05-05 17:10:18</sys_created_on><sys_customer_update>true</sys_customer_update><sys_id>19ed22a54fe232002debb7a18110c73d</sys_id><sys_mod_count>0</sys_mod_count><sys_name>spAttachmentManager.Copy of KB Article Page</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>m2m_sp_ng_pro_sp_widget_19ed22a54fe232002debb7a18110c73d</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2017-05-05 17:10:18</sys_updated_on></m2m_sp_ng_pro_sp_widget></record_update>]]></payload>
+<remote_update_set display_value="NYancer - Service Portal Contextual Search">1eedff9c4fe332002debb7a18110c7e3</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2017-06-20 18:50:16</sys_created_on>
+<sys_id>deedff9c4fe332002debb7a18110c7e4</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-06-20 18:50:16</sys_updated_on>
+<table/>
+<target_name>spAttachmentManager.Copy of KB Article Page</target_name>
+<type>Angular Providers</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>
