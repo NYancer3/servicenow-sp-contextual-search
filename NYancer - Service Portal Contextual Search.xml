@@ -63,7 +63,7 @@ if (canReadArticle) {
   }
 
   t.category = articleGR.getValue('kb_category');
-  t.sys_id = $sp.getParameter('sys_id');
+  t.sys_id = artId;
   t.showAttachments = false;
   if (articleGR.display_attachments)
     t.showAttachments = true;
